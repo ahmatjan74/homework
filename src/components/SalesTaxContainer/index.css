@@ -7,13 +7,27 @@
 
 .title {
     font-size: 18px;
+    margin-left: 20px;
 }
 
-.item__container {
+.item__container, .title__container {
     display: flex;
     flex-direction: row;
     width: 100%;
-    margin: 20px;
+    margin: 3px 20px;
+}
+
+.display__container, .result__container {
+    width: 79%;
+    margin-left:20px;
+}
+
+.add-btn, .submit_btn, .clear-btn {
+    margin: 10px 0;
+}
+
+.clear-btn {
+    margin-left: 5px;
 }
 
 .item {
@@ -29,7 +43,3 @@
 .product__select {
     width: 90%;
 }
-
-.result__container {}
-
-.input__container {}

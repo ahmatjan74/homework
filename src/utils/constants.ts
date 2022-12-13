@@ -1,26 +1,31 @@
 export const PRODUCT_TYPES = [{
     label: 'Book',
     value: 'book',
-    exempt: true
+    exempt: true,
+    currency: ''
 },
 {
     label: 'Music CD',
     value: 'musicCD',
-    exempt: false
+    exempt: false,
+    currency: ''
 },
 {
     label: 'Chocolate Bar',
     value: 'chocolateBar',
-    exempt: true
+    exempt: true,
+    currency: 'box'
 },
 {
     label: 'Perfume',
     value: 'perfume',
-    exempt: false
+    exempt: false,
+    currency: 'bottle'
 },
 {
     label: 'Headache Pills',
     value: 'headachePills',
-    exempt: true
+    exempt: true,
+    currency: 'packet'
 }
 ]

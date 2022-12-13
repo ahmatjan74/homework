@@ -1,10 +1,10 @@
 import React from "react";
 import {render, screen} from '@testing-library/react'
-import SalesTax from "../SalesTax";
+import SalesTaxContainer from "../components/SalesTaxContainer";
 
 describe('Sales Tax', () => {
     test('Sales Tax: render page', () => {
-        render(<SalesTax />);
-        expect(screen.getAllByText('aaa')).toHaveLength(1);
+        render( <SalesTaxContainer />);
+        expect(screen.getAllByText('INPUT').length).toBe(1)
     })
 })
