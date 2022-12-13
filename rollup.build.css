@@ -1,0 +1,38 @@
+.sales-tax__container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+}
+.sales-tax__container .title {
+  font-size: 18px;
+}
+.sales-tax__container .item__container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin: 20px;
+}
+.sales-tax__container .item__container .item {
+  display: inline-block;
+  width: 25%;
+}
+.sales-tax__container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+}
+.sales-tax__container .title {
+  font-size: 18px;
+}
+.sales-tax__container .item__container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin: 20px;
+}
+.sales-tax__container .item__container .item {
+  display: inline-block;
+  width: 25%;
+}

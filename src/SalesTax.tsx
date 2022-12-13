@@ -1,14 +1,10 @@
-import React, { FC } from 'react';
-import { sum } from 'utils/index';
+import SalesTaxContainer from 'components/SalesTaxContainer/index';
+import React from 'react';
 
-console.log('sum', sum(1, 2));
-
-const SalesTax: FC
-  = () => {
-    const name = 'aaa'
-    return (
-      <div >{name}</div>
-    );
-  }
+const SalesTax: React.FC = () => {
+  return (
+    <SalesTaxContainer />
+  );
+}
 
 export default SalesTax;

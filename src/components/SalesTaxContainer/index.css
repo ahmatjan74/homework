@@ -1,0 +1,35 @@
+.sales-tax__container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.title {
+    font-size: 18px;
+}
+
+.item__container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin: 20px;
+}
+
+.item {
+    display: inline-block;
+    width: 20%;
+}
+
+.number__input,
+.price_input {
+    width: 95%;
+}
+
+.product__select {
+    width: 90%;
+}
+
+.result__container {}
+
+.input__container {}

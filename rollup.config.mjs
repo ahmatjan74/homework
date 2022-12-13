@@ -5,11 +5,11 @@ import { nodeResolve } from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import { babel } from "@rollup/plugin-babel";
 import replace from "@rollup/plugin-replace";
-// import { terser } from 'rollup-plugin-terser';
 import serve from "rollup-plugin-serve";
 import livereload from "rollup-plugin-livereload";
 import htmlTemplate from "rollup-plugin-generate-html-template";
 import postcss from "rollup-plugin-postcss";
+import peerDepsExternal from 'rollup-plugin-peer-deps-external'
 
 export default {
   input: ["./src/index.tsx"],
@@ -19,13 +19,11 @@ export default {
   },
   plugins: [
     typescript(), // 会自动读取sconfig.json配置文件
-    postcss({
-      extensions: [".css"], // 将scss解析成css
-      extract: true,
-      modules: true,
-    }),
+    peerDepsExternal({includeDependencies: false}),
+    postcss(),
     clear({
       targets: ["dist"],
+      watch: true,
     }),
     replace({
       preventAssignment: true,
@@ -33,10 +31,11 @@ export default {
     }),
     nodeResolve({}),
     commonjs(),
-    babel(), // 会自动读取babel的配置文件
-    // terser(),
+    babel({
+      exclude: "node_modules/**",
+    }),
     serve("dist"),
-    livereload("src"), // 当src目录中的文件发生变化时，刷新页面
+    livereload("dist"),
     htmlTemplate({
       template: "public/index.html",
       target: "dist/index.html",
@@ -46,5 +45,5 @@ export default {
     {
       includeDependencies: true,
     },
-  ], // 项目中引用的第三方库
+  ],
 };
