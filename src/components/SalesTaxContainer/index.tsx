@@ -16,10 +16,10 @@ interface SalesTaxObject {
 }
 const SalesTaxContainer: FC
   = () => {
-    const [number, setNumber] = useState<number>(0)
+    const [number, setNumber] = useState<number | null>(null)
     const [product, setProduct] = useState<string>(PRODUCT_TYPES[0].value)
     const [isImported, setIsImported] = useState<boolean>(false)
-    const [price, setPrice] = useState<number>(0)
+    const [price, setPrice] = useState<number | null>(null)
     const [values, setValues] = useState<Array<SalesTaxObject>>([])
     const [displayText, setDisplayText] = useState<string>('')
     const [resultText, setResultText] = useState<string | null>(null)
@@ -39,41 +39,56 @@ const SalesTaxContainer: FC
       setIsImported(value);
     }
 
+    const calculateTotalPrice = (_currentPrice: number, taxRate: number, number: number) => {
+      // free
+      if (taxRate === -1) {
+        return formatNumberAndFix2(_currentPrice * number)
+      }
+      return formatNumberAndFix2((_currentPrice + _currentPrice * taxRate) * number);
+    }
+
+    const calculateTax = (total: number, price: number, number: number) => {
+      return total - price * number
+    }
+
+    const toFixed2 = (number: number) => {
+      return number.toFixed(2);
+    }
+
     const onSubmitClick = () => {
-      let total = 0;
+      let sum = 0;
       let taxes = 0;
       let _resultText = values.map((_value) => {
-        total += (_value.price * _value.number)
-        let _currentPrice = _value.price;
         // tax free && basic -> 0
         if (_value.isTaxFree && !_value.isImported) {
           // tax -> 0
-          return `${_value.number}  ${_value.currency ? _value.currency + ' of' : ''} ${_value.product}: ${formatNumberAndFix2(_currentPrice * _value.number)}`
+          const total = calculateTotalPrice(_value.price, -1, _value.number);
+          sum += total;
+          return `${_value.number}  ${_value.currency ? _value.currency + ' of' : ''} ${_value.product}: ${total}`
         }
         // tax free but imported -> 5
         if (_value.isTaxFree && _value.isImported) {
-          let tax = (_currentPrice * 0.05) * _value.number;
-          _currentPrice = (_currentPrice * _value.number) + tax;
-          taxes += tax;
-          return `${_value.number} imported ${_value.currency ? _value.currency + 'of' : ''} ${_value.product}: ${formatNumberAndFix2(_currentPrice)}`
+          const total = calculateTotalPrice(_value.price, 0.05, _value.number);
+          taxes += calculateTax(total, _value.price, _value.number);
+          sum += total;
+          return `${_value.number} imported ${_value.currency ? _value.currency + ' of' : ''} ${_value.product}: ${total}`
         }
         // not tax free && basic => 10 
         if (!_value.isTaxFree && !_value.isImported) {
-          let tax = (_currentPrice * 0.1) * _value.number
-          _currentPrice = (_currentPrice * _value.number) + tax;
-          taxes += tax;
-          return `${_value.number} ${_value.currency ? _value.currency + ' of' : ''} ${_value.product}: ${formatNumberAndFix2(_currentPrice)}`
+          const total = calculateTotalPrice(_value.price, 0.1, _value.number);
+          taxes += calculateTax(total, _value.price, _value.number);
+          sum += total;
+          return `${_value.number} ${_value.currency ? _value.currency + ' of' : ''} ${_value.product}: ${total}`
         }
         // not tax free && imported
         if (!_value.isTaxFree && _value.isImported) {
-          let tax = (_currentPrice * 0.15) * _value.number;
-          _currentPrice = (_currentPrice * _value.number) + tax;
-          taxes += tax;
-          return `${_value.number} imported  ${_value.currency ? _value.currency + 'of' : ''} ${_value.product}: ${formatNumberAndFix2(_currentPrice)}`
+          const total = calculateTotalPrice(_value.price, 0.15, _value.number);
+          taxes += calculateTax(total, _value.price, _value.number);
+          sum += total;
+          return `${_value.number} imported  ${_value.currency ? _value.currency + 'of' : ''} ${_value.product}: ${total}`
         }
       }).join('\n');
-      total += taxes;
-      _resultText = _resultText + `\nSales Taxes: ${formatNumberAndFix2(taxes)}\nTotal: ${formatNumberAndFix2(total)}`;
+      _resultText = _resultText + `\nSales Taxes: ${toFixed2(formatNumberAndFix2(taxes))}\nTotal: ${toFixed2(formatNumberAndFix2(sum))}`;
       setResultText(_resultText);
     }
 
@@ -86,7 +101,7 @@ const SalesTaxContainer: FC
 
     const onAddClick = () => {
       const { exempt, currency } = PRODUCT_TYPES.find((type) => type.value === product)!;
-      const _values = [...values, { number, product, price, isImported, isTaxFree: exempt, currency }]
+      const _values = [...values, { number: number!, product, price: price!, isImported, isTaxFree: exempt, currency }]
       const _displayValue = _values.map((each) => `${each.number} ${each.isImported ? 'imported ' : ''} ${each.currency ? each.currency + ' of' : ''} ${each.product} at ${each.price}`).join('\n')
       setDisplayText(_displayValue)
       setValues(_values);
@@ -94,8 +109,8 @@ const SalesTaxContainer: FC
 
     const clearInput = () => {
       setProduct(PRODUCT_TYPES[0].value);
-      setPrice(0);
-      setNumber(0);
+      setPrice(null);
+      setNumber(null);
       setIsImported(false);
     }
     return (
@@ -109,13 +124,20 @@ const SalesTaxContainer: FC
         </div>
         <div className='item__container'>
           <span className='item'>
-            <InputNumber value={number} className='number__input' onChange={(value) => onNumberChange(value!)} />
+            <InputNumber
+              value={number}
+              min={0}
+              placeholder='please input a number'
+              className='number__input'
+              onChange={(value) => onNumberChange(value!)}
+            />
           </span>
           <span className='item'>
             <Select
               onChange={onProductChange}
               className='product__select'
               options={PRODUCT_TYPES}
+              placeholder='please select a product'
               value={product}
             />
           </span>
@@ -123,7 +145,13 @@ const SalesTaxContainer: FC
             <Switch checked={isImported} onChange={onImportedChange} />
           </span>
           <span className='item'>
-            <InputNumber className='price_input' value={price} onChange={(value) => onPriceChange(value!)} />
+            <InputNumber
+              className='price_input'
+              min={0}
+              placeholder='please input price'
+              value={price}
+              onChange={(value) => onPriceChange(value!)}
+            />
           </span>
           <span className='item'>
             <Button type='primary' onClick={onAddClick}>Add</Button>&nbsp;
@@ -136,7 +164,7 @@ const SalesTaxContainer: FC
         </div>
         {
           resultText && <div className='result__container'>
-            <TextArea value={resultText} disabled rows={6}></TextArea>
+            <TextArea placeholder='results' value={resultText!} disabled rows={6}></TextArea>
           </div>
         }
       </div>

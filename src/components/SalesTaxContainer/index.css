@@ -26,6 +26,11 @@
     margin: 10px 0;
 }
 
+.text-area {
+    display: block;
+    margin: 20px;
+}
+
 .clear-btn {
     margin-left: 5px;
 }
